@@ -6,315 +6,59 @@ import type {
   HumanMockRequest,
   UserProfile,
   User,
-  ModerationCase,
 } from '../types/index.ts';
 
-export const INITIAL_LEADERS: User[] = [
-  {
-    id: 'leader-1',
-    email: 'marcus.vance@executive-mentors.org',
-    nickname: 'MarcusVance_VP',
-    role: 'LEADER',
-    isVerified: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    createdAt: '2026-01-15T08:00:00Z',
-  },
-  {
-    id: 'leader-2',
-    email: 'sarah.jenkins@executive-mentors.org',
-    nickname: 'SarahJ_CTO',
-    role: 'LEADER',
-    isVerified: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
-    createdAt: '2026-02-10T09:30:00Z',
-  },
-  {
-    id: 'leader-3',
-    email: 'arvind.kumar@executive-mentors.org',
-    nickname: 'DrArvind_HeadOfAI',
-    role: 'LEADER',
-    isVerified: true,
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    createdAt: '2026-03-01T11:00:00Z',
-  },
-];
+export const BOARDROOM_HERO_IMAGE = '/src/assets/images/exec_boardroom_hero_1792328288177.jpg';
+export const TECH_ROADMAP_IMAGE = '/src/assets/images/executive_tech_roadmap_1792328587674.jpg';
 
-export const INITIAL_ASPIRANT: User = {
-  id: 'asp-curr',
-  email: 'alex.chen@platform-engineer.io',
-  nickname: 'AlexArchitect',
-  role: 'ASPIRANT',
-  isVerified: true,
-  avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-  createdAt: '2026-04-12T14:20:00Z',
-};
-
+// The solitary Admin user account
 export const INITIAL_ADMIN: User = {
-  id: 'admin-1',
-  email: 'coordinator@execascent.org',
-  nickname: 'ExecAscent_Coordinator',
+  id: 'admin-super',
+  email: 'admin@execascent.org',
+  nickname: 'SuperAdmin_Governance',
   role: 'ADMIN',
   isVerified: true,
+  accountStatus: 'APPROVED',
+  company: 'ExecAscent Executive Board',
+  designation: 'Platform Super Administrator & Lead Coordinator',
+  experienceYears: 20,
+  tieredTrustStatus: 'COMMUNITY_FELLOW',
+  notes: 'Master credentials for user account approval, mentor verification, and community safety governance.',
   createdAt: '2026-01-01T00:00:00Z',
 };
 
+// Aliased fallback for safety; points strictly to the Admin user
+export const INITIAL_ASPIRANT: User = INITIAL_ADMIN;
+
+// Clean collection containing only the single admin user ID
+export const INITIAL_REGISTERED_USERS: User[] = [INITIAL_ADMIN];
+
+// All dummy data collections cleared
+export const INITIAL_LEADERS: User[] = [];
+export const INITIAL_POSTS: ContentPost[] = [];
+export const INITIAL_COMMENTS: CommentItem[] = [];
+export const INITIAL_TOPIC_REQUESTS: LiveTopicRequest[] = [];
+export const INITIAL_LIVE_SESSIONS: LiveSessionEvent[] = [];
+export const INITIAL_MOCK_REQUESTS: HumanMockRequest[] = [];
+
+// Admin profile
 export const INITIAL_USER_PROFILE: UserProfile = {
-  userId: 'asp-curr',
-  nickname: 'AlexArchitect',
-  email: 'alex.chen@platform-engineer.io',
-  position: 'Lead Distributed Systems Architect',
-  designation: 'Staff Software Engineer',
-  experienceYears: 12,
-  company: 'Fintech Cloud Operations Corp',
-  skillset: ['Kubernetes', 'Go', 'Distributed Consensus', 'Event-Driven Systems', 'Engineering Management'],
-  targetDesignation: 'Director of Platform Engineering / VP Engineering',
-  careerPlan: 'Transitions from individual contributor architect into executive technology director overseeing 40+ engineers across 4 squads within 9 months.',
+  userId: 'admin-super',
+  nickname: 'SuperAdmin_Governance',
+  email: 'admin@execascent.org',
+  position: 'Platform Super Administrator',
+  designation: 'Platform Coordinator & Lead Architect',
+  experienceYears: 20,
+  company: 'ExecAscent Governance Board',
+  skillset: ['Executive Leadership', 'Platform Governance', 'Technical Mentorship', 'System Architecture'],
+  targetDesignation: 'Executive Board Member',
+  careerPlan: 'Governing the non-monetary executive mentoring community and upholding executive interview quality standards.',
   privacySettings: {
-    company: 'private', // Defaults to private for psychological safety!
+    company: 'public',
     experience_years: 'public',
     position: 'public',
     skillset: 'public',
     target_designation: 'public',
-    career_plan: 'private', // Defaults to private
+    career_plan: 'public',
   },
-  resumeFileName: 'Alex_Chen_Executive_Staff_Resume.pdf',
-  resumeUploadedAt: '2026-10-15T09:00:00Z',
 };
-
-export const INITIAL_POSTS: ContentPost[] = [
-  {
-    id: 'post-1',
-    authorId: 'leader-1',
-    authorNickname: 'MarcusVance_VP',
-    authorRole: 'LEADER',
-    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    type: 'REEL',
-    title: 'The #1 Mistake Staff Engineers Make in Director Behavioral Interviews',
-    bodyText: 'When interviewing for Director or VP, stop describing what "we" built. The interview panel wants to hear how YOU influenced the strategic decision, handled executive dissent, and established operational governance when systems were in crisis.',
-    mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    durationSeconds: 110,
-    tags: ['#Behavioral', '#ExecutivePresence', '#Leadership'],
-    status: 'APPROVED',
-    upvotes: 142,
-    hasUpvoted: false,
-    hasSaved: true,
-    commentsCount: 18,
-    createdAt: '2026-10-16T12:00:00Z',
-  },
-  {
-    id: 'post-2',
-    authorId: 'leader-2',
-    authorNickname: 'SarahJ_CTO',
-    authorRole: 'LEADER',
-    authorAvatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
-    type: 'ARTICLE',
-    title: 'Deconstructing the Systemic Trade-Off: How to Ace Situational Architecture Interviews',
-    bodyText: `In senior executive interviews, questions like "How would you handle a 10x traffic spike with degraded database replicas?" are not tests of memory. They are tests of strategic risk appetite and crisis orchestration.
-
-### The 4-Step Executive Response Matrix:
-1. **Immediate Blast-Radius Containment:** Shed non-critical tier-3 workloads, enforce active rate limits, and communicate customer SLAs transparently.
-2. **Decoupling Dependency Chains:** Shift synchronous queries to asynchronous message buffers and read-replicas.
-3. **Cross-Functional Communication:** Establish an hourly stakeholder update cadence to protect executive leadership from panic decisions.
-4. **Permanent Post-Mortem Governance:** Frame root cause as a systemic failure rather than individual error, funding architectural debt remediation.`,
-    tags: ['#Situational', '#ExecutivePresence', '#SystemDesign'],
-    status: 'APPROVED',
-    upvotes: 98,
-    hasUpvoted: true,
-    hasSaved: false,
-    commentsCount: 12,
-    createdAt: '2026-10-15T15:30:00Z',
-  },
-  {
-    id: 'post-3',
-    authorId: 'leader-3',
-    authorNickname: 'DrArvind_HeadOfAI',
-    authorRole: 'LEADER',
-    authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    type: 'REEL',
-    title: 'Handling the HR Round: Negotiating Scope and Executive Equity as a Volunteer Mentee',
-    bodyText: 'Many senior candidates treat the HR round as a formality. In reality, HR assesses cultural alignment, risk tolerance, and compensation calibration. Here is how to speak the language of headcount ROI.',
-    mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-    durationSeconds: 145,
-    tags: ['#HRRound', '#ExecutivePresence', '#CareerProgression'],
-    status: 'APPROVED',
-    upvotes: 84,
-    hasUpvoted: false,
-    hasSaved: false,
-    commentsCount: 7,
-    createdAt: '2026-10-14T08:15:00Z',
-  },
-  {
-    id: 'post-4',
-    authorId: 'leader-1',
-    authorNickname: 'MarcusVance_VP',
-    authorRole: 'LEADER',
-    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    type: 'REEL',
-    title: '[PENDING APPROVAL] 60-Second Drill: Turning "I fixed a bug" into a $2M Business Outcome',
-    bodyText: 'Submitted for Admin Moderation review. Demonstrates how to translate low-level technical triage into executive financial language.',
-    mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4',
-    durationSeconds: 65,
-    tags: ['#Behavioral', '#ExecutivePresence'],
-    status: 'PENDING_APPROVAL',
-    upvotes: 0,
-    hasUpvoted: false,
-    hasSaved: false,
-    commentsCount: 0,
-    createdAt: '2026-10-18T01:30:00Z',
-  },
-];
-
-export const INITIAL_COMMENTS: CommentItem[] = [
-  {
-    id: 'com-1',
-    postId: 'post-1',
-    authorId: 'asp-curr',
-    authorNickname: 'AlexArchitect',
-    authorRole: 'ASPIRANT',
-    isVerifiedLeader: false,
-    content: 'Marcus, should I focus on team morale during the outage or purely on the architectural remediations when answering in the STAR format?',
-    createdAt: '2026-10-16T13:40:00Z',
-    upvotes: 14,
-  },
-  {
-    id: 'com-2',
-    postId: 'post-1',
-    authorId: 'leader-1',
-    authorNickname: 'MarcusVance_VP',
-    authorRole: 'LEADER',
-    isVerifiedLeader: true,
-    content: 'Great question Alex! In the Action phase, spend 60% on your technical incident command and 40% on shielding your engineers from executive panic. Directors are judged on psychological safety as much as system uptime.',
-    createdAt: '2026-10-16T14:05:00Z',
-    upvotes: 32,
-  },
-];
-
-export const INITIAL_TOPIC_REQUESTS: LiveTopicRequest[] = [
-  {
-    id: 'req-top-1',
-    requesterId: 'asp-curr',
-    requesterNickname: 'AlexArchitect',
-    topic: 'Navigating the Staff-to-Director Transition: Answering Cross-Functional Behavioral Scenarios',
-    description: 'We need practical advice from VPs on how to answer behavioral interview questions when moving from Staff Engineer into management.',
-    targetLevel: 'Staff / Principal -> Director',
-    preferredTimeWindows: ['Weekday Evenings (6-8 PM EST)', 'Saturday Mornings (10 AM EST)'],
-    upvotes: 38,
-    status: 'GROUPED',
-    createdAt: '2026-10-12T10:00:00Z',
-  },
-  {
-    id: 'req-top-2',
-    requesterId: 'asp-2',
-    requesterNickname: 'DataEngineerPro',
-    topic: 'Architectural Governance & Board-Level Presentation Skills in Situational Interviews',
-    description: 'How to present trade-off matrices to C-level stakeholders during high-stakes situational interview rounds.',
-    targetLevel: 'Senior Lead -> VP / Head of Tech',
-    preferredTimeWindows: ['Sunday Afternoon (2-4 PM PST)'],
-    upvotes: 27,
-    status: 'SUBMITTED',
-    createdAt: '2026-10-14T11:20:00Z',
-  },
-];
-
-export const INITIAL_LIVE_SESSIONS: LiveSessionEvent[] = [
-  {
-    id: 'session-1',
-    title: 'Mastering the Executive Behavioral Round: Live Q&A with VP Marcus Vance',
-    description: 'Interactive WebRTC webinar covering STAR structuring, handling executive pushback, and translating engineering output into financial impact.',
-    hostLeaderId: 'leader-1',
-    hostLeaderNickname: 'MarcusVance_VP',
-    hostRole: 'VP Engineering @ ScaleCloud',
-    scheduledTime: new Date(Date.now() + 2 * 3600 * 1000).toISOString(), // 2 hours from now!
-    durationMinutes: 60,
-    webrtcRoomId: 'asc-live-behavioral-mastery',
-    capacity: 100,
-    status: 'SCHEDULED',
-    tags: ['#Behavioral', '#ExecutivePresence', '#WebRTC'],
-    attendeesCount: 46,
-    isUserRsvp: true,
-    approvalStatus: 'APPROVED',
-  },
-  {
-    id: 'session-2',
-    title: 'Situational Crisis Simulation: Live Incident Command Interview Breakdown',
-    description: 'Dr. Arvind Kumar leads a live mock situational interview with audience participation and real-time critique.',
-    hostLeaderId: 'leader-3',
-    hostLeaderNickname: 'DrArvind_HeadOfAI',
-    hostRole: 'Head of AI & Distributed Systems',
-    scheduledTime: new Date(Date.now() + 26 * 3600 * 1000).toISOString(), // Tomorrow
-    durationMinutes: 75,
-    webrtcRoomId: 'asc-live-crisis-simulation',
-    capacity: 80,
-    status: 'SCHEDULED',
-    tags: ['#Situational', '#IncidentCommand', '#WebRTC'],
-    attendeesCount: 31,
-    isUserRsvp: false,
-    approvalStatus: 'APPROVED',
-  },
-  {
-    id: 'session-3',
-    title: '[PENDING APPROVAL] HR Calibration for High-Level Technical Executives',
-    description: 'Submitted by Sarah Jenkins. Needs Coordinator WebRTC room verification.',
-    hostLeaderId: 'leader-2',
-    hostLeaderNickname: 'SarahJ_CTO',
-    hostRole: 'CTO & Former Principal Architect',
-    scheduledTime: new Date(Date.now() + 48 * 3600 * 1000).toISOString(),
-    durationMinutes: 45,
-    webrtcRoomId: 'asc-pending-hr-calibration',
-    capacity: 50,
-    status: 'PROPOSED',
-    tags: ['#HRRound', '#ExecutiveScope'],
-    attendeesCount: 14,
-    isUserRsvp: false,
-    approvalStatus: 'PENDING_APPROVAL',
-  },
-];
-
-export const INITIAL_MOCK_REQUESTS: HumanMockRequest[] = [
-  {
-    id: 'mock-req-1',
-    aspirantId: 'asp-curr',
-    aspirantNickname: 'AlexArchitect',
-    preferredLeaderId: 'leader-1',
-    preferredLeaderNickname: 'MarcusVance_VP',
-    resumeUrl: '/resumes/alex_chen_cv.pdf',
-    resumeFileName: 'Alex_Chen_Staff_CV.pdf',
-    targetRole: 'Director of Platform Engineering',
-    interviewType: 'BEHAVIORAL',
-    jobDescription: 'Leading 40+ platform engineers responsible for distributed multi-region Kubernetes clusters, 99.999% SLA, and zero-trust security.',
-    status: 'PREFERRED_PENDING',
-    preferredExpiresAt: new Date(Date.now() + 32 * 3600 * 1000).toISOString(), // 32 hours left on 48h timer!
-    createdAt: new Date(Date.now() - 16 * 3600 * 1000).toISOString(),
-    notes: 'Focusing on answering cross-functional conflict and handling pushback from VP of Product.',
-  },
-  {
-    id: 'mock-req-2',
-    aspirantId: 'asp-devops',
-    aspirantNickname: 'DevOpsTitan',
-    resumeUrl: '/resumes/devops_titan.pdf',
-    resumeFileName: 'DevOps_Titan_Resume.pdf',
-    targetRole: 'Head of Infrastructure & Cloud Operations',
-    interviewType: 'SITUATIONAL',
-    jobDescription: 'Architecting global multi-cloud FinOps initiatives and steering cloud migration under strict compliance (SOC2, HIPAA).',
-    status: 'OPEN_BOARD',
-    createdAt: new Date(Date.now() - 54 * 3600 * 1000).toISOString(), // Expired past 48h -> Open Board!
-    notes: 'Need tough situational challenges on cloud bill shock and catastrophic regional outages.',
-  },
-  {
-    id: 'mock-req-3',
-    aspirantId: 'asp-curr',
-    aspirantNickname: 'AlexArchitect',
-    claimedLeaderId: 'leader-2',
-    claimedLeaderNickname: 'SarahJ_CTO',
-    resumeUrl: '/resumes/alex_chen_cv.pdf',
-    resumeFileName: 'Alex_Chen_Staff_CV.pdf',
-    targetRole: 'VP of Engineering',
-    interviewType: 'EXECUTIVE_STRATEGY',
-    jobDescription: 'Executive technology officer steering organization of 80 engineers across 3 continents.',
-    status: 'CLAIMED',
-    scheduledTime: new Date(Date.now() + 4 * 3600 * 1000).toISOString(),
-    webrtcRoomId: 'asc-mock-alex-sarah-room',
-    createdAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
-    notes: 'Prior mock session claimed by Sarah. Ready for WebRTC connection.',
-  },
-];

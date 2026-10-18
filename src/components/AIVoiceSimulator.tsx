@@ -20,6 +20,7 @@ import {
 import type { AIVoiceSession, AIScorecardResult, TranscriptTurn } from '../types/index.ts';
 import { evaluateCandidateResponse } from '../utils/scorecardEvaluator.ts';
 import { maskPIIInDocument } from '../utils/privacyFilter.ts';
+import { useExecutiveTheme } from '../theme/ThemeContext.tsx';
 
 interface AIVoiceSimulatorProps {
   userNickname: string;
@@ -32,6 +33,7 @@ export const AIVoiceSimulator: React.FC<AIVoiceSimulatorProps> = ({
   onSaveToCareerPlan,
   onClose,
 }) => {
+  const { theme, themeConfig } = useExecutiveTheme();
   // Step in simulator: 'SETUP' | 'CONSENT' | 'INTERVIEW' | 'EVALUATION'
   const [step, setStep] = useState<'SETUP' | 'CONSENT' | 'INTERVIEW' | 'EVALUATION'>('SETUP');
 
@@ -342,21 +344,21 @@ export const AIVoiceSimulator: React.FC<AIVoiceSimulatorProps> = ({
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl text-slate-100">
+    <div className={`${themeConfig.cardBg} border ${themeConfig.panelBorder} rounded-2xl overflow-hidden shadow-2xl ${themeConfig.textPrimary} transition-colors`}>
       {/* Simulator Header */}
-      <div className="p-4 border-b border-slate-800 bg-slate-950/70 flex items-center justify-between">
+      <div className={`p-5 border-b ${themeConfig.panelBorder} ${theme === 'titanium' ? 'bg-slate-50' : 'bg-slate-950/70'} flex items-center justify-between`}>
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-slate-100 flex items-center space-x-2">
+            <h3 className={`font-bold text-base flex items-center space-x-2 ${themeConfig.textPrimary}`}>
               <span>Executive Voice AI Mock Simulator</span>
-              <span className="text-[10px] bg-sky-500/20 text-sky-400 border border-sky-500/30 px-2 py-0.5 rounded-full font-mono">
-                Full-Duplex Audio &bull; RAG
+              <span className="text-xs font-mono text-sky-500 font-normal">
+                · Full-Duplex Audio / RAG
               </span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className={`text-xs ${themeConfig.textSecondary}`}>
               Interactive STAR Interview Practice &bull; Persona: Senior VP of Engineering AI
             </p>
           </div>

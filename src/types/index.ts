@@ -17,6 +17,9 @@ export type SessionStatus =
   | 'COMPLETED' 
   | 'CANCELLED';
 
+export type AccountStatus = 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
+export type TieredTrustStatus = 'PROBATIONARY' | 'VERIFIED_CONTRIBUTOR' | 'COMMUNITY_FELLOW';
+
 export interface User {
   id: string;
   email: string;
@@ -25,6 +28,13 @@ export interface User {
   isVerified: boolean;
   avatarUrl?: string;
   createdAt: string;
+  accountStatus?: AccountStatus;
+  company?: string;
+  designation?: string;
+  experienceYears?: number;
+  tieredTrustStatus?: TieredTrustStatus;
+  rejectionReason?: string;
+  notes?: string;
 }
 
 export type PrivacySetting = 'private' | 'public';

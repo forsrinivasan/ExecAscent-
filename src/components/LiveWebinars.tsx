@@ -12,8 +12,10 @@ import {
   ChevronRight,
   Shield,
   Sparkles,
+  X,
 } from 'lucide-react';
 import type { LiveTopicRequest, LiveSessionEvent, UserRole } from '../types/index.ts';
+import { useExecutiveTheme } from '../theme/ThemeContext.tsx';
 
 interface LiveWebinarsProps {
   topicRequests: LiveTopicRequest[];
@@ -40,6 +42,7 @@ export const LiveWebinars: React.FC<LiveWebinarsProps> = ({
   onToggleRSVP,
   onJoinWebRTC,
 }) => {
+  const { theme, themeConfig } = useExecutiveTheme();
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showProposeModal, setShowProposeModal] = useState(false);
   const [selectedTopicToHost, setSelectedTopicToHost] = useState<LiveTopicRequest | null>(null);
@@ -98,28 +101,25 @@ export const LiveWebinars: React.FC<LiveWebinarsProps> = ({
     e.preventDefault();
     if (!proposeTitle.trim()) return;
 
-    const roomId = `asc-live-${Math.random().toString(36).substring(2, 9)}`;
-
-    const newSession: LiveSessionEvent = {
+    const newSess: LiveSessionEvent = {
       id: `sess-${Date.now()}`,
-      topicRequestId: selectedTopicToHost?.id,
-      title: proposeTitle.trim(),
-      description: proposeDesc.trim(),
       hostLeaderId: currentUserId,
       hostLeaderNickname: currentUserNickname,
-      hostRole: 'Volunteer IT Executive Mentor',
+      hostRole: 'VP of Engineering',
+      title: proposeTitle.trim(),
+      description: proposeDesc.trim(),
       scheduledTime: new Date(proposeTime).toISOString(),
       durationMinutes: durationMins,
-      webrtcRoomId: roomId,
+      webrtcRoomId: `asc-live-${Date.now()}`,
       capacity: 100,
-      status: 'PROPOSED',
-      approvalStatus: 'PENDING_APPROVAL', // Mandatory Admin Moderation Gateway
-      tags: ['#WebRTC', '#ExecutiveMasterclass', '#Leadership'],
+      approvalStatus: 'PENDING_APPROVAL', // Mandatory Admin Room Approval Gateway
+      status: 'SCHEDULED',
+      tags: ['#ExecutiveMasterclass', '#Leadership'],
       attendeesCount: 1,
       isUserRsvp: true,
     };
 
-    onProposeSession(newSession);
+    onProposeSession(newSess);
     setShowProposeModal(false);
   };
 
@@ -156,22 +156,26 @@ END:VCALENDAR`;
   return (
     <div className="space-y-8">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/40 p-6 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className={`p-6 rounded-2xl border ${themeConfig.panelBorder} ${themeConfig.cardBg} flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm`}>
         <div>
-          <div className="flex items-center space-x-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <div className="flex items-center space-x-2 text-xs font-semibold uppercase tracking-wider mb-1 text-amber-500">
             <Video className="w-4 h-4" />
-            <span>Native In-App WebRTC Video &bull; No 3rd-Party Redirects</span>
+            <span>Native In-App WebRTC Video &bull; Zero External Redirects</span>
           </div>
-          <h2 className="text-xl font-bold text-slate-100">Live Executive Webinars &amp; Demand Aggregation</h2>
-          <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            Aspirants submit and vote on high-impact session topics. Volunteer IT Leaders schedule and host interactive native WebRTC video seminars with real-time Q&amp;A.
+          <h2 className="text-xl font-bold tracking-tight">Live Executive Webinars &amp; Demand Aggregation</h2>
+          <p className={`text-xs mt-1 max-w-2xl leading-relaxed ${themeConfig.textSecondary}`}>
+            Aspirants submit and vote on high-impact executive topics. Volunteer IT Leaders schedule and host interactive native WebRTC video seminars with real-time Q&amp;A.
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setShowRequestModal(true)}
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl transition border border-slate-700 flex items-center space-x-1.5"
+            className={`text-xs font-semibold px-4 py-2.5 rounded-xl transition border flex items-center space-x-1.5 ${
+              theme === 'titanium'
+                ? 'border-slate-300 bg-white hover:bg-slate-50 text-slate-800'
+                : 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200'
+            }`}
           >
             <Plus className="w-4 h-4 text-sky-400" />
             <span>Request a Topic</span>
@@ -180,7 +184,7 @@ END:VCALENDAR`;
           {currentUserRole === 'LEADER' && (
             <button
               onClick={() => handleOpenProposeModal()}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow flex items-center space-x-1.5"
+              className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow flex items-center space-x-1.5"
             >
               <Sparkles className="w-4 h-4" />
               <span>Propose &amp; Host Webinar</span>
@@ -192,16 +196,25 @@ END:VCALENDAR`;
       {/* Section 1: Scheduled Live Webinars */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-100 flex items-center space-x-2">
-            <Calendar className="w-4 h-4 text-amber-400" />
+          <h3 className={`text-base font-bold flex items-center space-x-2 ${themeConfig.textPrimary}`}>
+            <Calendar className="w-4 h-4 text-amber-500" />
             <span>Scheduled &amp; Upcoming WebRTC Webinars</span>
           </h3>
-          <span className="text-xs text-slate-400 font-mono">
+          <span className={`text-xs font-mono tabular-nums ${themeConfig.textMuted}`}>
             {liveSessions.filter((s) => s.approvalStatus === 'APPROVED').length} Approved Sessions
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {liveSessions.filter((s) => s.approvalStatus === 'APPROVED' || currentUserRole === 'ADMIN').length === 0 ? (
+          <div className={`p-10 rounded-2xl border ${themeConfig.panelBorder} text-center space-y-3`}>
+            <Calendar className="w-8 h-8 text-amber-500 mx-auto" />
+            <p className={`text-sm font-semibold ${themeConfig.textPrimary}`}>No Webinars Scheduled Yet</p>
+            <p className={`text-xs ${themeConfig.textSecondary}`}>
+              All dummy sessions have been cleared. As an Administrator or verified leader, schedule a live WebRTC masterclass using the button above.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {liveSessions
             .filter((s) => s.approvalStatus === 'APPROVED' || currentUserRole === 'ADMIN')
             .map((session) => {
@@ -220,234 +233,285 @@ END:VCALENDAR`;
               return (
                 <div
                   key={session.id}
-                  className={`bg-slate-900 border rounded-2xl p-5 flex flex-col justify-between transition hover:border-slate-700 shadow-lg ${
-                    isPending ? 'border-amber-500/40 bg-amber-950/10' : 'border-slate-800'
+                  className={`border rounded-2xl p-5 flex flex-col justify-between transition duration-200 shadow-sm ${
+                    isPending
+                      ? 'border-amber-500/40 bg-amber-500/5'
+                      : `${themeConfig.cardBg} ${themeConfig.panelBorder}`
                   }`}
                 >
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full flex items-center space-x-1.5">
-                        <Clock className="w-3 h-3" />
+                    {/* Zero-Pill Unboxed Schedule Metadata */}
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                      <div className="flex items-center space-x-2 font-mono text-[11px] text-amber-500">
+                        <Clock className="w-3.5 h-3.5" />
                         <span>
                           {formattedDate} &bull; {formattedTime} ({session.durationMinutes}m)
                         </span>
-                      </span>
+                      </div>
 
                       {isPending ? (
-                        <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-mono">
-                          Pending Admin Room Approval
+                        <span className="text-[11px] font-mono text-amber-500 font-medium">
+                          Pending Room Approval
                         </span>
                       ) : (
-                        <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-medium">
+                        <span className="text-[11px] font-mono text-emerald-500 font-medium">
                           WebRTC Room Ready
                         </span>
                       )}
                     </div>
 
-                    <h4 className="font-bold text-slate-100 text-base">{session.title}</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed">{session.description}</p>
+                    <h4 className={`font-bold text-base leading-snug ${themeConfig.textPrimary}`}>
+                      {session.title}
+                    </h4>
+                    <p className={`text-xs leading-relaxed ${themeConfig.textSecondary}`}>
+                      {session.description}
+                    </p>
 
                     <div className="flex items-center space-x-2 text-xs text-slate-400">
                       <span>Host:</span>
-                      <strong className="text-slate-200">{session.hostLeaderNickname}</strong>
+                      <strong className={themeConfig.textPrimary}>{session.hostLeaderNickname}</strong>
                       <span className="text-slate-500">({session.hostRole})</span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1.5">
-                      {session.tags.map((t) => (
-                        <span key={t} className="text-[10px] text-sky-400 font-mono bg-slate-950 px-2 py-0.5 rounded">
-                          {t}
-                        </span>
+                    {/* Unboxed tags */}
+                    <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
+                      {session.tags.map((t, idx) => (
+                        <React.Fragment key={t}>
+                          {idx > 0 && <span aria-hidden="true">&bull;</span>}
+                          <span>{t}</span>
+                        </React.Fragment>
                       ))}
                     </div>
                   </div>
 
-                  {/* Footer RSVP & Launch WebRTC Room */}
-                  <div className="pt-4 border-t border-slate-800/80 mt-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-2 text-xs text-slate-400">
-                      <Users className="w-3.5 h-3.5" />
-                      <span>
-                        {session.attendeesCount} / {session.capacity} RSVPs
+                  {/* Actions Bar */}
+                  <div className={`mt-5 pt-4 border-t ${themeConfig.panelBorder} flex items-center justify-between gap-2`}>
+                    <div className="flex items-center space-x-3 text-xs text-slate-400">
+                      <span className="flex items-center space-x-1">
+                        <Users className="w-3.5 h-3.5 text-slate-500" />
+                        <span className="font-mono tabular-nums">{session.attendeesCount} RSVPed</span>
                       </span>
+
+                      <button
+                        onClick={() => downloadICS(session)}
+                        className="hover:text-amber-500 transition flex items-center space-x-1"
+                        title="Download Calendar Invite (.ics)"
+                      >
+                        <Download className="w-3 h-3" />
+                        <span className="hidden sm:inline">.ics</span>
+                      </button>
                     </div>
 
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => downloadICS(session)}
-                        title="Download .ics Calendar Invite"
-                        className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                      </button>
-
-                      <button
                         onClick={() => onToggleRSVP(session.id)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
                           session.isUserRsvp
-                            ? 'bg-slate-800 text-emerald-400 border border-emerald-500/40'
-                            : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
+                            : 'border-slate-700 hover:border-slate-500 text-slate-300'
                         }`}
                       >
-                        {session.isUserRsvp ? '✓ Attending' : 'RSVP'}
+                        {session.isUserRsvp ? '✓ RSVP Confirmed' : 'RSVP Now'}
                       </button>
 
-                      <button
-                        onClick={() =>
-                          onJoinWebRTC(session.webrtcRoomId, session.title, session.hostLeaderNickname)
-                        }
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow flex items-center space-x-1.5"
-                      >
-                        <Video className="w-3.5 h-3.5" />
-                        <span>Join Live WebRTC</span>
-                      </button>
+                      {session.approvalStatus === 'APPROVED' && (
+                        <button
+                          onClick={() =>
+                            onJoinWebRTC(
+                              session.webrtcRoomId || 'live-seminar',
+                              session.title,
+                              session.hostLeaderNickname
+                            )
+                          }
+                          className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow flex items-center space-x-1.5"
+                        >
+                          <Video className="w-3.5 h-3.5" />
+                          <span>Join WebRTC</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
               );
             })}
         </div>
+        )}
       </div>
 
-      {/* Section 2: Demand-Driven Topic Aggregation */}
+      {/* Section 2: Aspirant Demand Aggregation & Topic Voting */}
       <div className="space-y-4 pt-4 border-t border-slate-800">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center space-x-2">
-              <Sparkles className="w-4 h-4 text-sky-400" />
-              <span>Community Requested Topics (Demand Aggregation)</span>
+            <h3 className={`text-base font-bold flex items-center space-x-2 ${themeConfig.textPrimary}`}>
+              <ThumbsUp className="w-4 h-4 text-sky-400" />
+              <span>Requested Executive Masterclass Topics (Demand Board)</span>
             </h3>
-            <p className="text-xs text-slate-400">
-              Vote on topics you want IT Leaders to host. IT Leaders review high-demand requests to schedule group masterclasses.
+            <p className={`text-xs mt-0.5 ${themeConfig.textSecondary}`}>
+              Aspirants vote on what topics volunteer leaders should cover next. High-demand topics are prioritized.
             </p>
           </div>
+
+          <button
+            onClick={() => setShowRequestModal(true)}
+            className="text-xs font-semibold text-amber-500 hover:underline"
+          >
+            + Submit New Topic
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {topicRequests.map((req) => (
-            <div
-              key={req.id}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-start justify-between gap-4 transition hover:border-slate-700"
-            >
-              <div className="space-y-1.5 flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-mono uppercase bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
-                    {req.targetLevel}
-                  </span>
-                  <span className="text-[10px] text-slate-500">
-                    Requested by {req.requesterNickname}
-                  </span>
+        {topicRequests.length === 0 ? (
+          <div className={`p-8 rounded-2xl border ${themeConfig.panelBorder} text-center space-y-2`}>
+            <ThumbsUp className="w-6 h-6 text-sky-400 mx-auto" />
+            <p className={`text-xs font-semibold ${themeConfig.textPrimary}`}>No Topic Requests Submitted Yet</p>
+            <p className={`text-[11px] ${themeConfig.textSecondary}`}>
+              Aspirants can submit topics they want covered by leadership. Click "+ Submit New Topic" to propose one.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {topicRequests.map((req) => (
+              <div
+                key={req.id}
+                className={`border rounded-2xl p-4 flex flex-col justify-between transition shadow-sm ${themeConfig.cardBg} ${themeConfig.panelBorder}`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-mono text-amber-500">{req.targetLevel}</span>
+                    <button
+                      onClick={() => onTopicUpvote(req.id)}
+                      className="flex items-center space-x-1 text-slate-400 hover:text-amber-500 transition text-xs font-mono"
+                      title="Vote for this topic"
+                    >
+                      <ThumbsUp className="w-3.5 h-3.5" />
+                      <span className="tabular-nums font-bold">{req.upvotes}</span>
+                    </button>
+                  </div>
+
+                  <h4 className={`font-bold text-sm leading-snug ${themeConfig.textPrimary}`}>
+                    {req.topic}
+                  </h4>
+                  <p className={`text-xs mt-1.5 line-clamp-3 leading-relaxed ${themeConfig.textSecondary}`}>
+                    {req.description}
+                  </p>
+
+                  <div className={`mt-3 text-[11px] ${themeConfig.textMuted}`}>
+                    <span>Requested Windows: </span>
+                    <span className="font-mono">{req.preferredTimeWindows.join(' · ')}</span>
+                  </div>
                 </div>
 
-                <h4 className="font-bold text-sm text-slate-100">{req.topic}</h4>
-                <p className="text-xs text-slate-300 leading-relaxed">{req.description}</p>
-
-                <div className="text-[11px] text-slate-400 flex items-center space-x-1">
-                  <Clock className="w-3 h-3 text-slate-500" />
-                  <span>Preferred: {req.preferredTimeWindows.join(' | ')}</span>
+                <div className={`mt-4 pt-3 border-t ${themeConfig.panelBorder} flex items-center justify-between text-xs`}>
+                  <span className={themeConfig.textMuted}>By {req.requesterNickname}</span>
+                  {currentUserRole === 'LEADER' && (
+                    <button
+                      onClick={() => handleOpenProposeModal(req)}
+                      className="text-indigo-400 hover:text-indigo-300 font-semibold"
+                    >
+                      Host This Topic &rarr;
+                    </button>
+                  )}
                 </div>
               </div>
-
-              {/* Upvote & Leader Host Button */}
-              <div className="flex flex-col items-center space-y-2 shrink-0">
-                <button
-                  onClick={() => onTopicUpvote(req.id)}
-                  className="flex flex-col items-center justify-center bg-slate-950 border border-slate-800 hover:border-sky-500/50 p-2 rounded-xl transition text-slate-300 hover:text-sky-400"
-                >
-                  <ThumbsUp className="w-4 h-4" />
-                  <span className="text-xs font-bold mt-0.5">{req.upvotes}</span>
-                </button>
-
-                {currentUserRole === 'LEADER' && (
-                  <button
-                    onClick={() => handleOpenProposeModal(req)}
-                    className="text-[10px] font-bold bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600 hover:text-white px-2 py-1 rounded-lg transition"
-                  >
-                    Host This
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Request Topic Modal */}
       {showRequestModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-base text-slate-100 flex items-center space-x-2">
-                <Plus className="w-4 h-4 text-sky-400" />
-                <span>Request a Live Session Topic</span>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className={`rounded-2xl max-w-lg w-full p-6 shadow-2xl border space-y-4 ${
+            theme === 'titanium'
+              ? 'bg-white border-slate-200 text-slate-800'
+              : 'bg-[#101726] border-slate-700/80 text-slate-100'
+          }`}>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 className="font-bold text-base flex items-center space-x-2">
+                <Plus className="w-4 h-4 text-amber-500" />
+                <span>Submit Masterclass Topic Request</span>
               </h3>
               <button
                 onClick={() => setShowRequestModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded transition"
+                className="text-slate-400 hover:text-slate-200"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateTopicRequest} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Topic Title</label>
+                <label className="block font-medium mb-1 text-slate-400">Masterclass Topic Title</label>
                 <input
                   type="text"
                   required
                   value={newTopic}
                   onChange={(e) => setNewTopic(e.target.value)}
-                  placeholder="E.g., How to frame cross-functional dissent during Director interviews"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500"
+                  className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 ${
+                    theme === 'titanium'
+                      ? 'bg-slate-50 border-slate-200 text-slate-900'
+                      : 'bg-[#0A0F1D] border-slate-800 text-slate-100'
+                  }`}
+                  placeholder="e.g. Navigating Multi-Million Dollar Cloud Budgets with CFOs"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Target Audience &amp; Seniority Level</label>
+                <label className="block font-medium mb-1 text-slate-400">Target Career Transition</label>
                 <input
                   type="text"
-                  required
                   value={targetLevel}
                   onChange={(e) => setTargetLevel(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500"
+                  className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 ${
+                    theme === 'titanium'
+                      ? 'bg-slate-50 border-slate-200 text-slate-900'
+                      : 'bg-[#0A0F1D] border-slate-800 text-slate-100'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Context &amp; Questions to Cover</label>
+                <label className="block font-medium mb-1 text-slate-400">Description &amp; Key Questions</label>
                 <textarea
                   rows={3}
                   required
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
-                  placeholder="Specific questions or scenarios you want experienced leaders to break down..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500"
+                  className={`w-full border rounded-lg p-3 text-xs focus:outline-none focus:border-amber-500 ${
+                    theme === 'titanium'
+                      ? 'bg-slate-50 border-slate-200 text-slate-900'
+                      : 'bg-[#0A0F1D] border-slate-800 text-slate-100'
+                  }`}
+                  placeholder="What specific scenarios or heuristics would you like the executive leader to unpack?"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Preferred Time Windows</label>
+                <label className="block font-medium mb-1 text-slate-400">Preferred Scheduling Windows</label>
                 <input
                   type="text"
                   value={preferredWindows}
                   onChange={(e) => setPreferredWindows(e.target.value)}
-                  placeholder="E.g., Weekday Evenings (7 PM EST), Saturday 11 AM EST"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-sky-500"
+                  className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 ${
+                    theme === 'titanium'
+                      ? 'bg-slate-50 border-slate-200 text-slate-900'
+                      : 'bg-[#0A0F1D] border-slate-800 text-slate-100'
+                  }`}
                 />
               </div>
 
-              <div className="pt-2 flex gap-3">
+              <div className="pt-3 flex justify-end space-x-2 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowRequestModal(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition"
+                  className="px-4 py-2 rounded-lg border border-slate-700 text-slate-400 hover:text-slate-200 text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg transition shadow"
+                  className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-lg text-xs"
                 >
-                  Submit Topic Request
+                  Post Topic Request
                 </button>
               </div>
             </form>
@@ -455,93 +519,112 @@ END:VCALENDAR`;
         </div>
       )}
 
-      {/* Propose Session Modal (Leaders Only) */}
+      {/* Propose Webinar Modal (Leader Only) */}
       {showProposeModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-base text-slate-100 flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
-                <span>Propose Live WebRTC Webinar</span>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className={`rounded-2xl max-w-lg w-full p-6 shadow-2xl border space-y-4 ${
+            theme === 'titanium'
+              ? 'bg-white border-slate-200 text-slate-800'
+              : 'bg-[#101726] border-slate-700/80 text-slate-100'
+          }`}>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 className="font-bold text-base flex items-center space-x-2">
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                <span>Host Volunteer WebRTC Webinar</span>
               </h3>
               <button
                 onClick={() => setShowProposeModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded transition"
+                className="text-slate-400 hover:text-slate-200"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
-            </div>
-
-            <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-200/90 flex items-start space-x-2">
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <p>
-                <strong>Admin Room Gateway:</strong> Your proposed webinar will be submitted to Coordinators for room schedule verification and approval.
-              </p>
             </div>
 
             <form onSubmit={handleSubmitPropose} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Session Title</label>
+                <label className="block font-medium mb-1 text-slate-400">Session Title</label>
                 <input
                   type="text"
                   required
                   value={proposeTitle}
                   onChange={(e) => setProposeTitle(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 ${
+                    theme === 'titanium'
+                      ? 'bg-slate-50 border-slate-200 text-slate-900'
+                      : 'bg-[#0A0F1D] border-slate-800 text-slate-100'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Session Agenda &amp; Takeaways</label>
+                <label className="block font-medium mb-1 text-slate-400">Description &amp; Agenda</label>
                 <textarea
                   rows={3}
                   required
                   value={proposeDesc}
                   onChange={(e) => setProposeDesc(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className={`w-full border rounded-lg p-3 text-xs focus:outline-none focus:border-amber-500 ${
+                    theme === 'titanium'
+                      ? 'bg-slate-50 border-slate-200 text-slate-900'
+                      : 'bg-[#0A0F1D] border-slate-800 text-slate-100'
+                  }`}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Date &amp; Time</label>
+                  <label className="block font-medium mb-1 text-slate-400">Scheduled Date &amp; Time</label>
                   <input
                     type="datetime-local"
                     required
                     value={proposeTime}
                     onChange={(e) => setProposeTime(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-indigo-500"
+                    className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 ${
+                      theme === 'titanium'
+                        ? 'bg-slate-50 border-slate-200 text-slate-900'
+                        : 'bg-[#0A0F1D] border-slate-800 text-slate-100'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Duration (Minutes)</label>
-                  <select
+                  <label className="block font-medium mb-1 text-slate-400">Duration (Minutes)</label>
+                  <input
+                    type="number"
+                    min="30"
+                    max="180"
                     value={durationMins}
-                    onChange={(e) => setDurationMins(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100 focus:outline-none focus:border-indigo-500"
-                  >
-                    <option value={45}>45 Minutes</option>
-                    <option value={60}>60 Minutes</option>
-                    <option value={75}>75 Minutes</option>
-                    <option value={90}>90 Minutes</option>
-                  </select>
+                    onChange={(e) => setDurationMins(parseInt(e.target.value))}
+                    className={`w-full border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 ${
+                      theme === 'titanium'
+                        ? 'bg-slate-50 border-slate-200 text-slate-900'
+                        : 'bg-[#0A0F1D] border-slate-800 text-slate-100'
+                    }`}
+                  />
                 </div>
               </div>
 
-              <div className="pt-2 flex gap-3">
+              <div className={`p-3 rounded-lg border text-[11px] ${
+                theme === 'titanium'
+                  ? 'bg-amber-50 border-amber-200 text-amber-900'
+                  : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+              }`}>
+                Note: Session proposals route through the Admin Moderation Gateway for room ID provision before appearing on the public calendar.
+              </div>
+
+              <div className="pt-3 flex justify-end space-x-2 border-t border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowProposeModal(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition"
+                  className="px-4 py-2 rounded-lg border border-slate-700 text-slate-400 hover:text-slate-200 text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg transition shadow"
+                  className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded-lg text-xs"
                 >
-                  Submit for Room Approval
+                  Submit for Approval
                 </button>
               </div>
             </form>

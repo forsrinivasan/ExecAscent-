@@ -1,0 +1,7 @@
+{
+  "name": "ExecAscent - Executive IT Career Acceleration & Mentorship",
+  "description": "Non-monetary community platform for experienced IT professionals preparing for senior and executive roles with WebRTC live webinars, human mock interview board, and AI voice mock simulator.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

@@ -101,7 +101,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   ]);
 
   const handleCopyAdminCredentials = () => {
-    navigator.clipboard?.writeText('Email: admin@execascent.org\nPassword: ExecAscent#2026Admin\nRole: SuperAdmin_Governance');
+    navigator.clipboard?.writeText('Email: admin@execascent.org\nRole: SuperAdmin_Governance');
     setCopiedKey(true);
     setTimeout(() => setCopiedKey(false), 2000);
   };
@@ -263,7 +263,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 </span>
                 <span>&bull;</span>
                 <span>
-                  Password: <strong className="text-amber-400 font-semibold">ExecAscent#2026Admin</strong>
+                  Password: <strong className="text-amber-400 font-semibold">[REDACTED]</strong>
                 </span>
                 <span>&bull;</span>
                 <span>

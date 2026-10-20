@@ -29,21 +29,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
   if (!isOpen) return null;
 
-  const handleAdminDirectLogin = () => {
-    onSuccess(INITIAL_ADMIN);
-    onClose();
-  };
-
   const handleRequestOTP = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes('@')) {
       setErrorMsg('Please enter a valid work or personal email address.');
-      return;
-    }
-    // If admin email entered, directly log in or offer admin fast path
-    if (email.trim().toLowerCase() === 'admin@execascent.org') {
-      onSuccess(INITIAL_ADMIN);
-      onClose();
       return;
     }
     setErrorMsg('');
@@ -106,34 +95,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
         {stage === 'EMAIL' && (
           <div className="space-y-4 text-xs">
-            {/* Super Admin Quick Access Card */}
-            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-1.5 text-amber-400 font-bold">
-                  <Key className="w-3.5 h-3.5" />
-                  <span className="text-[11px] uppercase tracking-wider">Platform Administrator</span>
-                </div>
-                <span className="text-[10px] text-amber-300 font-mono">Instant Gateway</span>
-              </div>
-              <p className="text-[11px] text-slate-300">
-                Log in as <strong>SuperAdmin_Governance</strong> (<span className="text-amber-400 font-mono">admin@execascent.org</span>) to verify and approve accounts.
-              </p>
-              <button
-                type="button"
-                onClick={handleAdminDirectLogin}
-                className="w-full py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg transition shadow-sm flex items-center justify-center space-x-1.5"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>1-Click Sign In as Super Admin</span>
-              </button>
-            </div>
-
-            <div className="relative flex py-1 items-center">
-              <div className="flex-grow border-t border-slate-800"></div>
-              <span className="flex-shrink mx-3 text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Or standard email sign in</span>
-              <div className="flex-grow border-t border-slate-800"></div>
-            </div>
-
             <form onSubmit={handleRequestOTP} className="space-y-4 text-xs">
               <p className="text-slate-400 leading-relaxed">
                 Register or sign in with your email address. A 6-digit Time-based One-Time Password (TOTP) will be dispatched.

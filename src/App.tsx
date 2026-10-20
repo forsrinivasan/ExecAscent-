@@ -63,15 +63,20 @@ import { useExecutiveTheme, ExecutiveTheme, THEME_CONFIGS } from './theme/ThemeC
 export default function App() {
   const { theme, setTheme, themeConfig } = useExecutiveTheme();
 
-  // Current user defaults to the sole authenticated Super Admin
-  const [currentUser, setCurrentUser] = useState<User>(INITIAL_ADMIN);
+  // Current user defaults to unauthenticated
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile>(INITIAL_USER_PROFILE);
   const [leaders, setLeaders] = useState<User[]>(INITIAL_LEADERS);
 
-  // Active navigation tab defaults to Admin Governance Gateway
+  // Active navigation tab defaults to Executive Hub
   const [activeNav, setActiveNav] = useState<
     'CONTENT' | 'WEBINARS' | 'HUMAN_MOCK' | 'AI_VOICE' | 'GRADUATION' | 'MODERATION' | 'PROFILE'
-  >('MODERATION');
+  >('CONTENT');
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setActiveNav('CONTENT');
+  };
 
   // Theme dropdown state
   const [showThemeMenu, setShowThemeMenu] = useState(false);
@@ -460,50 +465,7 @@ export default function App() {
               )}
             </div>
 
-            {/* Quick Role Persona Switcher */}
-            <div className={`flex items-center border p-0.5 rounded-lg text-xs shrink-0 ${
-              theme === 'titanium' ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
-            }`}>
-              <button
-                onClick={() => handleSwitchRole('ASPIRANT')}
-                className={`px-2 py-1 rounded font-medium text-[11px] transition ${
-                  currentUser.role === 'ASPIRANT'
-                    ? theme === 'titanium'
-                      ? 'bg-white text-slate-900 shadow-sm font-semibold'
-                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Aspirant Role"
-              >
-                Aspirant
-              </button>
-              <button
-                onClick={() => handleSwitchRole('LEADER')}
-                className={`px-2 py-1 rounded font-medium text-[11px] transition ${
-                  currentUser.role === 'LEADER'
-                    ? theme === 'titanium'
-                      ? 'bg-white text-slate-900 shadow-sm font-semibold'
-                      : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Verified IT Leader Role"
-              >
-                Leader
-              </button>
-              <button
-                onClick={() => handleSwitchRole('ADMIN')}
-                className={`px-2 py-1 rounded font-medium text-[11px] transition ${
-                  currentUser.role === 'ADMIN'
-                    ? theme === 'titanium'
-                      ? 'bg-white text-slate-900 shadow-sm font-semibold'
-                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Coordinator / Admin Role"
-              >
-                Admin
-              </button>
-            </div>
+            {/* Quick Role Persona Switcher - Removed for Production */}
 
             {/* Profile Avatar & Privacy Trigger */}
             <button
@@ -514,7 +476,7 @@ export default function App() {
                   : 'border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200'
               }`}
             >
-              {currentUser.avatarUrl ? (
+              {currentUser?.avatarUrl ? (
                 <img
                   src={currentUser.avatarUrl}
                   alt={currentUser.nickname}
@@ -522,21 +484,24 @@ export default function App() {
                 />
               ) : (
                 <div className="w-5 h-5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 font-bold text-[10px] flex items-center justify-center shrink-0">
-                  {currentUser.role === 'ADMIN' ? '🛡️' : currentUser.nickname.charAt(0)}
+                  {currentUser?.role === 'ADMIN' ? '🛡️' : currentUser?.nickname.charAt(0)}
                 </div>
               )}
               <span className="font-semibold text-xs hidden md:inline max-w-[130px] truncate">
-                {currentUser.nickname}
+                {currentUser?.nickname}
               </span>
             </button>
 
-            {/* Email OTP Sign-in */}
+            {/* Logout / Sign-in */}
             <button
-              onClick={() => setShowAuthModal(true)}
-              className="p-1.5 text-slate-400 hover:text-amber-500 transition"
-              title="Sign in with Email OTP"
+              onClick={currentUser ? handleLogout : () => setShowAuthModal(true)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                theme === 'titanium'
+                  ? 'bg-slate-800 text-white hover:bg-slate-700'
+                  : 'bg-amber-500/10 text-amber-500 border border-amber-500/30 hover:bg-amber-500/20'
+              }`}
             >
-              <Lock className="w-4 h-4" />
+              {currentUser ? 'Logout' : 'Sign In'}
             </button>
           </div>
         </div>
@@ -695,14 +660,13 @@ export default function App() {
           </section>
         )}
 
-        {/* Dynamic Viewports */}
         {activeNav === 'CONTENT' && (
           <ContentHub
             posts={posts}
             comments={comments}
-            currentUserNickname={currentUser.nickname}
-            currentUserId={currentUser.id}
-            currentUserRole={currentUser.role}
+            currentUserNickname={currentUser?.nickname ?? 'Visitor'}
+            currentUserId={currentUser?.id ?? 'visitor'}
+            currentUserRole={currentUser?.role ?? 'ASPIRANT'}
             onPostSubmit={handlePostSubmit}
             onAddComment={handleAddComment}
             onToggleUpvote={handleToggleUpvote}
@@ -714,9 +678,9 @@ export default function App() {
           <LiveWebinars
             topicRequests={topicRequests}
             liveSessions={liveSessions}
-            currentUserNickname={currentUser.nickname}
-            currentUserId={currentUser.id}
-            currentUserRole={currentUser.role}
+            currentUserNickname={currentUser?.nickname ?? 'Visitor'}
+            currentUserId={currentUser?.id ?? 'visitor'}
+            currentUserRole={currentUser?.role ?? 'ASPIRANT'}
             onTopicRequestSubmit={handleTopicRequestSubmit}
             onTopicUpvote={handleTopicUpvote}
             onProposeSession={handleProposeSession}
@@ -736,10 +700,10 @@ export default function App() {
           <HumanMockBoard
             requests={mockRequests}
             leaders={leaders}
-            currentUserId={currentUser.id}
-            currentUserNickname={currentUser.nickname}
-            currentUserRole={currentUser.role}
-            isLeaderVerified={currentUser.role === 'LEADER' || currentUser.role === 'ADMIN'}
+            currentUserId={currentUser?.id ?? 'visitor'}
+            currentUserNickname={currentUser?.nickname ?? 'Visitor'}
+            currentUserRole={currentUser?.role ?? 'ASPIRANT'}
+            isLeaderVerified={currentUser?.role === 'LEADER' || currentUser?.role === 'ADMIN'}
             onRequestSubmit={handleMockRequestSubmit}
             onRequestClaim={handleMockRequestClaim}
             onJoinWebRTCRoom={(roomId, title, targetRole, evaluatorNickname) =>
@@ -756,7 +720,7 @@ export default function App() {
 
         {activeNav === 'AI_VOICE' && (
           <AIVoiceSimulator
-            userNickname={currentUser.nickname}
+            userNickname={currentUser?.nickname ?? 'Visitor'}
             onSaveToCareerPlan={handleSaveAIScorecard}
           />
         )}
@@ -765,14 +729,14 @@ export default function App() {
           <CareerGraduation
             progression={progression}
             leaderImpact={leaderImpact}
-            userRole={currentUser.role}
-            userNickname={currentUser.nickname}
+            userRole={currentUser?.role ?? 'ASPIRANT'}
+            userNickname={currentUser?.nickname ?? 'Visitor'}
             targetRole={userProfile.targetDesignation}
             onVerifyLevel3={handleVerifyLevel3}
           />
         )}
 
-        {activeNav === 'MODERATION' && (
+        {activeNav === 'MODERATION' && currentUser?.role === 'ADMIN' && (
           <AdminConsole
             pendingPosts={pendingPosts}
             pendingSessions={pendingSessions}
@@ -787,7 +751,7 @@ export default function App() {
           />
         )}
 
-        {activeNav === 'PROFILE' && (
+        {activeNav === 'PROFILE' && currentUser && (
           <ProfilePrivacyCenter
             profile={userProfile}
             onUpdateProfile={(updated) => setUserProfile(updated)}
@@ -801,7 +765,7 @@ export default function App() {
       </main>
 
       {/* Embedded In-App Native WebRTC Video Conference Modal */}
-      {activeWebRTCRoom && (
+      {activeWebRTCRoom && currentUser && (
         <WebRTCLiveRoom
           roomId={activeWebRTCRoom.roomId}
           sessionTitle={activeWebRTCRoom.sessionTitle}
